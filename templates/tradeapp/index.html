@@ -1,0 +1,60 @@
+<!-- templates/home.html -->
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<table>
+     <thead>
+         <tr>
+             <th>Crypto</th>
+             <th>Price (USD)</th>
+             <th>Action</th>
+         </tr>
+     </thead>
+     <tbody>
+         <tr>
+             <td>Bitcoin (BTC)</td>
+             <td>45000.00</td>
+             <td><button onclick="openModal('BTC')">Buy/Sell</button></td>
+         </tr>
+         <!-- Add more cryptocurrencies as needed -->
+     </tbody>
+ </table>
+ 
+ <div id="btcModal" class="modal">
+     <h3>Buy/Sell Bitcoin (BTC)</h3>
+     <!-- Add form elements for buying/selling BTC -->
+     <label for="quantity">Quantity:</label>
+     <input type="number" id="quantity" name="quantity" required>
+     <br>
+     <label for="action">Action:</label>
+     <select id="action" name="action" required>
+         <option value="buy">Buy</option>
+         <option value="sell">Sell</option>
+     </select>
+     <br>
+     <button onclick="closeModal('btcModal')">Close</button>
+     <button onclick="submitTransaction('BTC')">Submit</button>
+ </div>
+ 
+ <div id="overlay" class="overlay" onclick="closeModal('btcModal')"></div>
+ 
+ <script>
+     function openModal(crypto) {
+         document.getElementById('btcModal').style.display = 'block';         
+     }
+ 
+     function closeModal(modalId) {
+         document.getElementById(modalId).style.display = 'none';
+         document.getElementById('overlay').style.display = 'none';
+     }
+ 
+     function submitTransaction(crypto) {
+         // Add logic to handle the buy/sell transaction
+         // You can use JavaScript to interact with a backend server for real transactions
+         alert(`Transaction submitted for ${crypto}`);
+         closeModal(`${crypto}Modal`);
+     }
+ </script>
+{% endblock %}
