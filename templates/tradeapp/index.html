@@ -6,15 +6,24 @@
 {% endblock %}
 
 {% block content %}
+  {% csrf_token %}
   <div class="container">
     <div class="row">
       <div class="col-12">
         <h2>Trade BOT</h2>
       </div>
+    </div>
+    <div class="row">
+      <form class="form-inline">
+        <a href="#accountModal" data-toggle="modal" data-target="#accountModal">Account</a>
+        | <a href="#" data-toggle="modal" onclick="getOrderList()">My Orders</a>
+      </form>
+    </div>
+    <div class="row">
       <div class="col-12">
         <div id="custom-search-input">
           <div class="input-group">
-            <input type="text" class="search-query form-control" placeholder="Enter Coin" />
+            <input type="text" id="searchQuery" class="search-query form-control" placeholder="Find Coin.." />
             <span class="input-group-btn"><button type="button" disabled><span class="fa fa-search"></span></button></span>
           </div>
         </div>
@@ -25,22 +34,24 @@
           <tr>
             <th>Crypto</th>
             <th>Market</th>
-            <th>Status</th>
+            <th>Price (KRW)</th>
             <th>Order Book</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {% for coin in coins %}
-            <tr>
+            <tr class="coinCap" id="coin-{{ coin.english_name }}">
               <td>{{ coin.english_name }}</td>
               <td>{{ coin.market }}</td>
-              <td></td>
               <td>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Order Book</button>
+                <span class="coin-price" id="coin-price-{{ coin.market }}" data-coin="{{ coin.market }}"></span>
               </td>
               <td>
-                <button class="btn btn-primary" onclick="openModal('BTC')">Buy/Sell</button>
+                <button class="orderBookButton" data-coin="{{ coin.market }}" type="button" class="btn btn-primary">Order Book</button>
+              </td>
+              <td>
+                <button class="btn btn-primary tradeModalClick" data-toggle="modal" data-coin="{{ coin.market }}">Buy/Sell</button>
               </td>
             </tr>
           {% endfor %}
@@ -50,60 +61,249 @@
     </div>
   </div>
 
-  <div id="btcModal" class="modal">
-    <h3>Buy/Sell Bitcoin (BTC)</h3>
-    <!-- Add form elements for buying/selling BTC -->
-    <label for="quantity">Quantity:</label>
-    <input type="number" id="quantity" name="quantity" required />
-    <br />
-    <label for="action">Action:</label>
-    <select id="action" name="action" required>
-      <option value="buy">Buy</option>
-      <option value="sell">Sell</option>
-    </select>
-    <br />
-    <button onclick="closeModal('btcModal')">Close</button>
-    <button onclick="submitTransaction('BTC')">Submit</button>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+  <!-- Account Modal -->
+  <div class="modal fade" id="accountModal" tabindex="-1" role="dialog" aria-labelledby="accountModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="exampleModalLongTitle">Account</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
-        <div class="modal-body">...</div>
+        <div class="modal-body">
+          <!-- if account.error is not null then show error -->
+          {% if account.error.name %}
+            <div class="alert alert-danger" role="alert">{{ account.error.message }}</div>
+          {% else %}
+            {{ account }}
+          {% endif %}
+        </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary">Save changes</button>
         </div>
       </div>
     </div>
   </div>
+  <!-- Modal -->
 
-  <div id="overlay" class="overlay" onclick="closeModal('btcModal')"></div>
+  <!-- Book Order Modal -->
+  <div class="modal fade" id="bookOrderModal" tabindex="-1" role="dialog" aria-labelledby="bookOrderModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookOrderModal">Order Book</h5>
+        </div>
+        <div class="modal-body" id="modalBodyBookOrderModal">
+          <!-- Order book data will be inserted here -->
+          <table class="table table-hover bodyBook">
+            <thead class="thead-dark">
+              <tr>
+                <th class="text-danger">매도호가</th>
+                <th class="text-danger">매도 잔량</th>
+                <th class="text-success">매수호가</th>
+                <th class="text-success">매수 잔량</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+
+  <!-- Trade Modal -->
+  <div class="modal fade" id="tradeModal" tabindex="-1" aria-labelledby="tradeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="tradeModalLabel">Buy/Sell Bitcoin (BTC)</h1>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Volume</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="volume" value="" />
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="inputPassword" class="col-sm-2 col-form-label">Action</label>
+              <div class="col-sm-10">
+                <select class="form-control" id="side">
+                  <option value="bid">Buy</option>
+                  <option value="ask">Sell</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Price</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="price" value="" />
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="staticEmail" class="col-sm-2 col-form-label">Order Type</label>
+              <div class="col-sm-10">
+                <select class="form-control" id="ord_type">
+                  <option value="limit">지정가 주문</option>
+                  <option value="price">시장가 주문 (매수)</option>
+                  <option value="market">시장가 주문 (매도)</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="tradeModalCloseBtn" type="button" class="btn btn-secondary tradeModalCloseBtn" data-bs-dismiss="modal">Close</button>
+          <button id="tradeModalSaveBtn" type="button" class="btn btn-primary">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- My Orders Modal -->
+  <div class="modal fade" id="myOrdersModal" tabindex="-1" role="dialog" aria-labelledby="myOrdersModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="myOrdersModal">My Orders</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body" id="modalBodyMyOrders">
+          <!-- Order book data will be inserted here -->
+          <table class="table table-hover bodyMyOrders">
+            <thead class="thead-dark">
+              <tr>
+                <th>마켓 ID (필수)</th>
+                <th>주문 종류 (필수)</th>
+                <th>주문량</th>
+                <th>주문 가격.</th>
+                <th>주문 유형 (필수)</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
 
   <script>
-    function openModal(crypto) {
-      document.getElementById('btcModal').style.display = 'block'
+    $('#searchQuery').on('input', function (e) {
+      var query = e.target.value.toLowerCase()
+      $('.coinCap').each(function (index, element) {
+        var coinName = element.id.split('-')[1].toLowerCase()
+        if (coinName.indexOf(query) === -1) {
+          $(element).hide()
+        } else {
+          $(element).show()
+        }
+      })
+    })
+    
+    $('.orderBookButton').click(function () {
+      var coin = $(this).data('coin') // get the coin name from the button
+      $.ajax({
+        url: '/trade/get_order_book?coin=' + coin, // replace with your Django API URL
+        method: 'GET',
+        success: function (data) {
+          $('.bodyBook tbody').empty() // clear the table body
+          var result = JSON.parse(data) // parse the JSON data
+          $.each(result[0].orderbook_units, function (key, value) {
+            $('.bodyBook tbody').append('<tr><td class="bg-danger text-white">' + value.ask_price + '</td><td class="bg-danger text-white">' + value.ask_size + '</td><td class="bg-success text-white">' + value.bid_price + '</td><td class="bg-success text-white">' + value.bid_size + '</td></tr>') // append a row to the table body
+          })
+          $('#bookOrderModal').modal('show') // open the modal
+        },
+        error: function (error) {
+          console.log(error)
+        }
+      })
+    
+      // Find coin and show price
+      // get the coin name
+      var element = $('#coin-price-' + coin) // store the element for later use
+      $.ajax({
+        url: '/trade/get_coin_price?coin=' + coin, // replace with your Django API URL
+        method: 'GET',
+        async: false,
+        success: function (data) {
+          var result = JSON.parse(data) // parse the JSON data
+          element.text(result[0].trade_price) // update the element's text with the coin's price
+        },
+        error: function (error) {
+          console.log(error)
+        }
+      })
+    })
+    
+    $('.tradeModalClick').click(function () {
+      var coin = $(this).data('coin') // get the coin name from the button
+      $('#tradeModalLabel').text('Buy/Sell ' + coin) // update the modal title
+      $('#tradeModalSaveBtn').data('coin', coin) // update the modal save button's data-coin attribute
+      $('#tradeModal').modal('show') // open the modal
+    })
+    
+    $('#tradeModalCloseBtn').click(function () {
+      $('#tradeModal').modal('hide')
+    })
+    
+    $('#tradeModalSaveBtn').click(function () {
+      var coin = $(this).data('coin') // get the coin name from the button
+      var volume = $('#volume').val() // get the volume from the input
+      var side = $('#side').val() // get the side from the input
+      var price = $('#price').val() // get the price from the input
+      var ord_type = $('#ord_type').val() // get the order type from the input
+      $.ajax({
+        url: '/trade/create_order',
+        method: 'POST',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify({
+          market: coin,
+          volume: volume,
+          side: side,
+          price: price,
+          ord_type: ord_type
+        }),
+        dataType: 'json',
+        success: function (data) {
+          $('#tradeModal').modal('hide')
+          getOrderList()
+        },
+        error: function (error) {
+          $('#tradeModal').modal('hide')
+          console.log(error)
+        }
+      })
+    })
+    
+    function getOrderList() {
+      $.ajax({
+        type: 'GET',
+        url: '/trade/order_list',
+        success: function (response) {
+          displayOrderList(response.orders)
+        },
+        error: function (error) {
+          alert('Error fetching order list: ' + error.responseJSON.error)
+        }
+      })
     }
     
-    function openModalBook(crypto) {
-      document.getElementById('modalOrderBook').style.display = 'block'
-    }
+    function displayOrderList(orders) {
+      $('.bodyMyOrders tbody').empty() // clear the table body
+      for (var i = 0; i < orders.length; i++) {
+        $('.bodyMyOrders tbody').append('<tr><td >' + orders[i].market + '</td><td>' + orders[i].side + '</td><td>' + orders[i].volume + '</td><td>' + orders[i].price + '</td><td>' + orders[i].ord_type + '</td></tr>') // append a row to the table body
+      }
     
-    function closeModal(modalId) {
-      document.getElementById(modalId).style.display = 'none'
-      document.getElementById('overlay').style.display = 'none'
-    }
-    
-    function submitTransaction(crypto) {
-      // Add logic to handle the buy/sell transaction
-      // You can use JavaScript to interact with a backend server for real transactions
-      alert(`Transaction submitted for ${crypto}`)
-      closeModal(`${crypto}Modal`)
+      $('#myOrdersModal').modal('show') // open the modal
     }
   </script>
 {% endblock %}
