@@ -1,60 +1,109 @@
 <!-- templates/home.html -->
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}Home{% endblock %}
+{% block title %}
+  Home
+{% endblock %}
 
 {% block content %}
-<table>
-     <thead>
-         <tr>
-             <th>Crypto</th>
-             <th>Price (USD)</th>
-             <th>Action</th>
-         </tr>
-     </thead>
-     <tbody>
-         <tr>
-             <td>Bitcoin (BTC)</td>
-             <td>45000.00</td>
-             <td><button onclick="openModal('BTC')">Buy/Sell</button></td>
-         </tr>
-         <!-- Add more cryptocurrencies as needed -->
-     </tbody>
- </table>
- 
- <div id="btcModal" class="modal">
-     <h3>Buy/Sell Bitcoin (BTC)</h3>
-     <!-- Add form elements for buying/selling BTC -->
-     <label for="quantity">Quantity:</label>
-     <input type="number" id="quantity" name="quantity" required>
-     <br>
-     <label for="action">Action:</label>
-     <select id="action" name="action" required>
-         <option value="buy">Buy</option>
-         <option value="sell">Sell</option>
-     </select>
-     <br>
-     <button onclick="closeModal('btcModal')">Close</button>
-     <button onclick="submitTransaction('BTC')">Submit</button>
- </div>
- 
- <div id="overlay" class="overlay" onclick="closeModal('btcModal')"></div>
- 
- <script>
-     function openModal(crypto) {
-         document.getElementById('btcModal').style.display = 'block';         
-     }
- 
-     function closeModal(modalId) {
-         document.getElementById(modalId).style.display = 'none';
-         document.getElementById('overlay').style.display = 'none';
-     }
- 
-     function submitTransaction(crypto) {
-         // Add logic to handle the buy/sell transaction
-         // You can use JavaScript to interact with a backend server for real transactions
-         alert(`Transaction submitted for ${crypto}`);
-         closeModal(`${crypto}Modal`);
-     }
- </script>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h2>Trade BOT</h2>
+      </div>
+      <div class="col-12">
+        <div id="custom-search-input">
+          <div class="input-group">
+            <input type="text" class="search-query form-control" placeholder="Enter Coin" />
+            <span class="input-group-btn"><button type="button" disabled><span class="fa fa-search"></span></button></span>
+          </div>
+        </div>
+      </div>
+
+      <table class="table table-hover">
+        <thead class="thead-dark">
+          <tr>
+            <th>Crypto</th>
+            <th>Market</th>
+            <th>Status</th>
+            <th>Order Book</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for coin in coins %}
+            <tr>
+              <td>{{ coin.english_name }}</td>
+              <td>{{ coin.market }}</td>
+              <td></td>
+              <td>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Order Book</button>
+              </td>
+              <td>
+                <button class="btn btn-primary" onclick="openModal('BTC')">Buy/Sell</button>
+              </td>
+            </tr>
+          {% endfor %}
+          <!-- Add more cryptocurrencies as needed -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="btcModal" class="modal">
+    <h3>Buy/Sell Bitcoin (BTC)</h3>
+    <!-- Add form elements for buying/selling BTC -->
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantity" name="quantity" required />
+    <br />
+    <label for="action">Action:</label>
+    <select id="action" name="action" required>
+      <option value="buy">Buy</option>
+      <option value="sell">Sell</option>
+    </select>
+    <br />
+    <button onclick="closeModal('btcModal')">Close</button>
+    <button onclick="submitTransaction('BTC')">Submit</button>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">...</div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay" onclick="closeModal('btcModal')"></div>
+
+  <script>
+    function openModal(crypto) {
+      document.getElementById('btcModal').style.display = 'block'
+    }
+    
+    function openModalBook(crypto) {
+      document.getElementById('modalOrderBook').style.display = 'block'
+    }
+    
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none'
+      document.getElementById('overlay').style.display = 'none'
+    }
+    
+    function submitTransaction(crypto) {
+      // Add logic to handle the buy/sell transaction
+      // You can use JavaScript to interact with a backend server for real transactions
+      alert(`Transaction submitted for ${crypto}`)
+      closeModal(`${crypto}Modal`)
+    }
+  </script>
 {% endblock %}
