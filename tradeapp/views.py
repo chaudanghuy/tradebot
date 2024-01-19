@@ -6,7 +6,7 @@ from .forms import CryptoSearchForm
 from django.conf import settings
 import json
 from django.views.decorators.csrf import csrf_exempt
-from .models import Order
+from .models import Order, BotCoin
 
 # Create your views here.
 @login_required(login_url="/accounts/login/")
@@ -73,3 +73,17 @@ def order_list(request):
     orders = Order.objects.all().order_by('-id')
     order_list = [{'market': order.market, 'side': order.side, 'volume': order.volume,'price': order.price,'ord_type': order.ord_type} for order in orders]
     return JsonResponse({'orders': order_list})
+
+@csrf_exempt
+def create_bot(request):
+     if request.method == 'POST':
+          try:             
+               data = json.loads(request.body)                               
+               market = data.get('market')
+               total_volume = data.get('total_volume')
+               profit_rate = data.get('profit_rate')
+     
+               botcoin = BotCoin.objects.create(market=market, total_volume=total_volume, profit_rate=profit_rate)
+               return JsonResponse({'market': market, 'total_volume': total_volume, 'profit_rate': profit_rate})
+          except Exception as e:
+               return JsonResponse({'error': str(e)}, status=400)          

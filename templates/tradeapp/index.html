@@ -17,6 +17,7 @@
       <form class="form-inline">
         <a href="#accountModal" data-toggle="modal" data-target="#accountModal">Account</a>
         | <a href="#" data-toggle="modal" onclick="getOrderList()">My Orders</a>
+        | <a href="#botModal" data-toggle="modal" data-target="#botModal">BOT</a>
       </form>
     </div>
     <div class="row">
@@ -80,6 +81,45 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal -->
+
+  <!-- BOT Modal -->
+  <div class="modal fade" id="botModal" tabindex="-1" role="dialog" aria-labelledby="botModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">BOT</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group row">
+              <label for="marketLabel" class="col-sm-2 col-form-label">Market</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="market" value="" />
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="volumeLabel" class="col-sm-2 col-form-label">Volume</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="total_volume" value="" />
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="profitRateLabel" class="col-sm-2 col-form-label">Profit Rate</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="profit_rate" value="" />
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="createBOT">Save changes</button>
         </div>
       </div>
     </div>
@@ -173,16 +213,16 @@
           <h5 class="modal-title" id="myOrdersModal">My Orders</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         </div>
-        <div class="modal-body" id="modalBodyMyOrders">
+        <div class="modal-body" id="modalBodyMyOrders" style="overflow: auto;">
           <!-- Order book data will be inserted here -->
           <table class="table table-hover bodyMyOrders">
             <thead class="thead-dark">
               <tr>
-                <th>마켓 ID (필수)</th>
-                <th>주문 종류 (필수)</th>
+                <th>마켓 ID</th>
+                <th>ORDER</th>
                 <th>주문량</th>
                 <th>주문 가격.</th>
-                <th>주문 유형 (필수)</th>
+                <th>TYPE</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -279,6 +319,30 @@
         },
         error: function (error) {
           $('#tradeModal').modal('hide')
+          console.log(error)
+        }
+      })
+    })
+    
+    $('#createBOT').click(function () {
+      var market = $('#market').val()
+      var total_volume = $('#total_volume').val()
+      var profit_rate = $('#profit_rate').val()
+      $.ajax({
+        url: '/trade/create_bot',
+        method: 'POST',
+        contentType: 'application/json;charset=UTF-8',
+        data: JSON.stringify({
+          market: market,
+          total_volume: total_volume,
+          profit_rate: profit_rate
+        }),
+        dataType: 'json',
+        success: function (data) {
+          $('#botModal').modal('hide')
+        },
+        error: function (error) {
+          $('#botModal').modal('hide')
           console.log(error)
         }
       })
