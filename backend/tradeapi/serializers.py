@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import TradeBot, TradeBotLog, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory
+from .models import TradeBotCommand, TradeBotCommandDetail, TradeBotLogCommand, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory, TradeBotSetting
 
 class TradeapiSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TradeBot
-        fields = '__all__'
+        model = TradeBotCommand
+        fields = '__all__'        

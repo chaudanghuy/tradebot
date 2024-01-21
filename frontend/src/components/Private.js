@@ -12,6 +12,8 @@ const Private = ({ Component }) => {
             'http://127.0.0.1:8000/trade/home', {
             headers: {
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+              Accept: 'application/json',
             }
           }
           );

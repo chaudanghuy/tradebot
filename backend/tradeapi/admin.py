@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TradeBot, TradeBotLog, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory
+from .models import TradeBotCommand, TradeBotCommandDetail, TradeBotLogCommand, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory
 
 # Register your models here.
 class TradeapiAdmin(admin.ModelAdmin):
@@ -9,4 +9,4 @@ class TradeapiAdmin(admin.ModelAdmin):
     ordering = ('market', 'timestamp', 'trade_price', 'trade_volume', 'ask_bid', 'is_expired', 'is_completed')
     readonly_fields = ('timestamp',)
 
-admin.site.register(TradeBot, TradeapiAdmin)
+admin.site.register(TradeBotCommand, TradeapiAdmin)

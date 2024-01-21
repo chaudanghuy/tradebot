@@ -52,6 +52,10 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 
 const Logout = React.lazy(() => import('./views/pages/login/Logout'))
 
+// Trade
+const Trade = React.lazy(() => import('./views/trade/Trade'))
+const Bot = React.lazy(() => import('./views/trade/Bot'))
+
 const routes = [
   { path: '/', exact: true, name: 'Home' },
   { path: '/dashboard', name: 'Dashboard', element: Dashboard },
@@ -97,7 +101,10 @@ const routes = [
   { path: '/notifications/modals', name: 'Modals', element: Modals },
   { path: '/notifications/toasts', name: 'Toasts', element: Toasts },
   { path: '/widgets', name: 'Widgets', element: Widgets },
-  { path: '/logout', name: 'Logout', element: Logout }
+  { path: '/logout', name: 'Logout', element: Logout },
+  // Trade
+  { path: '/trade', name: 'Trade', element: Trade },
+  { path: '/bot', name: 'Bot', element: Bot },
 ]
 
 export default routes
