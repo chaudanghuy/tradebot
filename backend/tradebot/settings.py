@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 from pathlib import Path
 import environ
+from datetime import timedelta
 
 # Initialise environment variables
 env = environ.Env()
@@ -47,9 +48,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap5',
     'corsheaders',
-    'rest_framework',
-    'tradeapp',
-    'tradeapi',
+    'rest_framework',    
+    'rest_framework_simplejwt.token_blacklist',
+    'tradeapi',    
 ]
 
 MIDDLEWARE = [
@@ -141,6 +142,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = "/trade"
 LOGOUT_REDIRECT_URL = "/"
 
-CORS_ORIGIN_WHITELIST = [
-    'https://localhost:3000',
-]
+CORS_ORIGIN_ALLOW_ALL = True
+ALLOWED_HOSTS = ['*']
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ]
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+     'ROTATE_REFRESH_TOKENS': True,
+     'BLACKLIST_AFTER_ROTATION': True
+}

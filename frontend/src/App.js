@@ -1,24 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
-import { Component } from 'react';
+import React, { Component, Suspense } from 'react'
+import { HashRouter, Route, Navigate, Routes } from 'react-router-dom'
+import './scss/style.scss'
+import Private from './components/Private'
+
+const loading = (
+  <div className="pt-3 text-center">
+    <div className="sk-spinner sk-spinner-pulse"></div>
+  </div>
+)
+
+// Containers
+const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
+
+// Pages
+const Login = React.lazy(() => import('./views/pages/login/Login'))
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { apiResponse: "" };
-  }
-
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <p>
-            {this.state.apiResponse}
-          </p>
-        </header>
-      </div>
-    );
+      <HashRouter>
+        <Suspense fallback={loading}>
+          <Routes>
+            <Route exact path="/login" name="Login Page" element={<Login />} />
+            <Route path="*" name="Home" element={<Private Component={DefaultLayout} />} />
+          </Routes>
+        </Suspense>
+      </HashRouter>
+    )
   }
 }
 
-export default App;
+export default App

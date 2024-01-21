@@ -6,10 +6,5 @@
 {% endblock %}
 
 {% block content %}
-  {% if user.is_authenticated %}
-    Hi {{ user.username }}!, go to <a href="/trade">trade</a>
-  {% else %}
-    <p>You are not logged in</p>
-    <a href="{% url 'login' %}">Log In</a>
-  {% endif %}
+  You are not authorized to access this page.
 {% endblock %}

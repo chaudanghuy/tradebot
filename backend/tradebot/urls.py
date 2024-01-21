@@ -18,19 +18,26 @@ from django.urls import path, include
 from django.views.generic.base import TemplateView
 from rest_framework import routers
 from tradeapi import views
+from rest_framework_simplejwt import views as jwt_views
 
 router = routers.DefaultRouter()
 router.register(r'tradeapi', views.TradeapiView, 'tradeapi')
 
 urlpatterns = [
-    # test
+    # admin
     path('admin/', admin.site.urls),
-    path('accounts/', include("django.contrib.auth.urls")),
-    path('trade/', include('tradeapp.urls')),
+    path('accounts/', include("django.contrib.auth.urls")),    
 
     # api
     path('api/', include(router.urls)),
 
     # homepage
     path("", TemplateView.as_view(template_name="home.html"), name="home"),
+    
+    # token
+    path('token', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # Tradebot view
+    path('trade/', include('tradeapi.urls')),
 ]
