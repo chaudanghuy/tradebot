@@ -288,6 +288,30 @@ class TradeBotCommandListView(APIView):
                         # buy_log = upbit.buy_market_order(ticker, total_weight)                                                
         except:
             print("error")
+            
+    def sell_process(self, ticker):
+        access_key = settings.ACCESS_UPBIT_KEY
+        screet_key = settings.SECRET_UPBIT_KEY
+                
+        upbit = pyupbit.Upbit(access_key, screet_key)
+        now_price = pyupbit.get_current_price(ticker)
+        average_price = upbit.get_avg_buy_price(ticker)
+        profit_rate = 1.1        
+        if (average_price >0) and (now_price>=average_price * profit_rate):
+            print(ticker, now_price, average_price)
+            print('\033[30m', time.strftime('%m-%d %H:%M:%S'), ticker, "매도")            
+            sell_log = self.sell_current_price(ticker)
+            print(sell_log)
+        elif average_price == 0:
+            print(ticker, "가 없습니다. ")
+
+    def sell_current_price(ticker):
+        access_key = settings.ACCESS_UPBIT_KEY
+        screet_key = settings.SECRET_UPBIT_KEY
+                
+        upbit = pyupbit.Upbit(access_key, screet_key)
+        unit = upbit.get_balance(ticker)
+        return upbit.sell_market_order(ticker, unit)
 
 class TradeBotCommandDelete(APIView):
     permission_classes = (IsAuthenticated,)
