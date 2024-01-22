@@ -92,7 +92,8 @@ const Trade = () => {
           Accept: 'application/json',
         }
       }).then(res => {
-        setBalance(res.data[0].balance)
+        setBalance(res.data.balances[0].balance)
+        setTradeBotTotal(res.data.total)
       }).catch(err => {
         console.log(err)
       });
@@ -115,7 +116,6 @@ const Trade = () => {
         setCandlePriceList(res.data.formatted_candle_price.map((price) => {
           return price
         }).join(','))
-        setTradeBotTotal(res.data.trade_bot_total)
         setIsDetecingPump(res.data.is_detecting_pump)
 
       }).catch(err => {

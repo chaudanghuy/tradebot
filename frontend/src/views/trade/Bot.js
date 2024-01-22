@@ -50,7 +50,7 @@ const Bot = () => {
 
   React.useEffect(() => {
     const intervalId = setInterval(getBotList, 5000);
-    const intervalId2 = setInterval(getLogList, 8000);
+    const intervalId2 = setInterval(getLogList, 10000);
     return () => clearInterval(intervalId);
     return () => clearInterval(intervalId2);
   });
