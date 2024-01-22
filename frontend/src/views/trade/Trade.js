@@ -34,6 +34,8 @@ const Trade = () => {
   const [currentPrice, setCurrentPrice] = React.useState('')
   const [candle, setCandle] = React.useState([])
   const [candlePriceList, setCandlePriceList] = React.useState('')
+  const [tradeBotTotal, setTradeBotTotal] = React.useState(0)
+  const [isDetecingPump, setIsDetecingPump] = React.useState(false)
   const [toast, addToast] = useState(0)
   const toaster = useRef()
 
@@ -74,6 +76,12 @@ const Trade = () => {
     }
 
     if (selectedCoin) {
+      getSelectedCoin();
+    }
+  });
+
+  const getSelectedCoin = async () => {
+    try {
       axios.get(`http://127.0.0.1:8000/trade/upbit/market/coin?market=${selectedCoin}`, {
         headers: {
           'Content-Type': 'application/json',
@@ -86,11 +94,16 @@ const Trade = () => {
         setCandlePriceList(res.data.formatted_candle_price.map((price) => {
           return price
         }).join(','))
+        setTradeBotTotal(res.data.trade_bot_total)
+        setIsDetecingPump(res.data.is_detecting_pump)
+
       }).catch(err => {
         console.log(err)
       });
+    } catch (error) {
+
     }
-  });
+  }
 
   const handleSelectedCoin = (e) => {
     setSelectedCoin(e.target.value)
@@ -142,7 +155,7 @@ const Trade = () => {
             </CCardBody>
           </CCard>
         </CCol>
-        <TradeCoin price={currentPrice} candlePriceList={candlePriceList} />
+        <TradeCoin price={currentPrice} candlePriceList={candlePriceList} tradeBotTotal={tradeBotTotal} isDetecingPump={isDetecingPump} />
         <CCol xs={12}>
           <CCard className="mb-4">
             <CCardHeader>

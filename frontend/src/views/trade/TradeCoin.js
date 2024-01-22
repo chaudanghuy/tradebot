@@ -13,7 +13,7 @@ import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
 import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons'
 
-const TradeCoin = ({ price, candlePriceList }) => {
+const TradeCoin = ({ price, candlePriceList, tradeBotTotal, isDetectingPump }) => {
   return (
     <CRow>
       <CCol sm={6} lg={3}>
@@ -195,7 +195,7 @@ const TradeCoin = ({ price, candlePriceList }) => {
           color="warning"
           value={
             <>
-              2.49{' '}
+              {isDetectingPump ? "Yes" : "No"}{' '}
               {/* <span className="fs-6 fw-normal">
                 (84.7% <CIcon icon={cilArrowTop} />)
               </span> */}
@@ -268,7 +268,7 @@ const TradeCoin = ({ price, candlePriceList }) => {
           color="danger"
           value={
             <>
-              44K{' '}
+              {tradeBotTotal}{' '}
               {/* <span className="fs-6 fw-normal">
                 (-23.6% <CIcon icon={cilArrowBottom} />)
               </span> */}

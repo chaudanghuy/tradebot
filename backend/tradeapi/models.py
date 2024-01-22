@@ -23,11 +23,11 @@ class TradeBotCommandDetail(models.Model):
     is_expired = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)    
 
-class TradeBotLogCommand(models.Model):
+class TradeBotLogCommand1(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     message = models.CharField(max_length=100)
     is_error = models.BooleanField(default=False)
-    trade_bot = models.ForeignKey(TradeBotCommandDetail, on_delete=models.CASCADE)    
+    trade_market = models.CharField(max_length=20)    
 
 class TradeBotConfig(models.Model):
     key = models.CharField(max_length=100)
