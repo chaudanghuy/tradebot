@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status
 from .serializers import TradeapiSerializer, TradeBotCommandSerializer
-from .models import TradeBotCommand, TradeBotCommandDetail, TradeBotLogCommand1, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory
+from .models import TradeBotCommand, TradeBotCommandDetail, TradeBotLogCommand1, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory, TradeBuyBotCommand
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -143,20 +143,29 @@ class TradeBotMarketCoin(APIView):
     
 class TradeBotCommandView(APIView):
     permission_classes = (IsAuthenticated,)
-    def post(self, request):
+    def post(self, request, param):
         try:
-            if request.method == 'POST':
+            if request.method == 'POST':                                    
                 market = request.data['market']
                 trade_price = request.data['trade_price']
                 trade_volume = request.data['volume']
                 ask_bid = request.data['ask_bid']
                 
-                tradeBotCommand = TradeBotCommand.objects.create(
-                    market=market,
-                    trade_price=trade_price,
-                    trade_volume=trade_volume,
-                    ask_bid=ask_bid
-                )
+                if (param == 'buy'):
+                    tradeBotCommand = TradeBuyBotCommand.objects.create(
+                        market=market,
+                        trade_price=trade_price,
+                        trade_volume=trade_volume,
+                        ask_bid=ask_bid
+                    )
+                else:
+                    tradeBotCommand = TradeBotCommand.objects.create(
+                        market=market,
+                        trade_price=trade_price,
+                        trade_volume=trade_volume,
+                        ask_bid=ask_bid
+                    )
+                                                                        
                 
                 return Response(status=status.HTTP_201_CREATED)
         except Exception as e:
@@ -164,11 +173,19 @@ class TradeBotCommandView(APIView):
 
 class TradeBotCommandListView(APIView):
     permission_classes = (IsAuthenticated,)    
-    def get(self, request):
+    def get(self, request, param):
+        
+        access_key = settings.ACCESS_UPBIT_KEY
+        screet_key = settings.SECRET_UPBIT_KEY                
+        upbit = pyupbit.Upbit(access_key, screet_key)        
+        
         try:
             if request.method == 'GET':
-                # get list bots with is_completed = 0                
-                bots = TradeBotCommand.objects.filter(is_completed=0)            
+                # get list bots with is_completed = 0         
+                if (param == 'buy'):
+                    bots = TradeBuyBotCommand.objects.filter(is_completed=0)                                                          
+                else:
+                    bots = TradeBotCommand.objects.filter(is_completed=0)
                 
                 # loop through bots and check if it is up or down
                 market_list_monitor = []
@@ -177,19 +194,34 @@ class TradeBotCommandListView(APIView):
                     data_count = 20
                     df = pyupbit.get_ohlcv(ticker, "minute1", 20)
                     try:
-                        add_average_min_df = df['volume'].rolling(window=10).mean().shift(1)
-                        average_vol = add_average_min_df['average'][data_count-1]
-                        now_vol = add_average_min_df['volume'][data_count-1]                                        
+                        add_average_min_df = sum(df['volume']) / len(df['volume'])
+                        average_vol = round(add_average_min_df, 2)                           
+                        
+                        result_row = []
+                        for index, row in df.iterrows():
+                            result_row.append({
+                                'timestamp': index.strftime('%Y-%m-%d %H:%M:%S'),
+                                'open': row['open'],
+                                'close': row['close'],
+                                'high': row['high'],
+                                'low': row['low'],
+                                'volume': row['volume'],
+                            })
+                        result_row.sort(key=lambda x: pd.to_datetime(x['timestamp']), reverse=True)
+        
+                        # get volume of last result_row record
+                        now_vol = result_row[0]['volume']
                         
                         # Up or Down
-                        last_close = add_average_min_df['close'][-1]
-                        last_open_price = add_average_min_df['open'][-1]                    
+                        # get the final close price of result_row                        
+                        last_close = result_row[len(result_row)-1]['close']
+                        last_open_price = result_row[len(result_row)-1]['open']                 
                         status = 20
                         if last_close - last_open_price > 0:
-                            status = 10
+                            status = 10     
                             
                         if status == 10:
-                            compare_vol = average_vol*7
+                            compare_vol = average_vol*0.5
                             if now_vol >= compare_vol:     
                                 bot.is_completed = 1
                                 bot.save()            
@@ -197,21 +229,19 @@ class TradeBotCommandListView(APIView):
                                     message="detecting pump and create command to buy " + ticker,
                                     is_error=False,
                                     trade_market=ticker
-                                );           
-                                print('\033[30m', time.strftime('%m-%d %H:%M:%S'), ticker, "구매")                        
+                                );                                           
                                 # buy_log = upbit.buy_market_order(ticker, total_weight)                                                       
                     except:                        
                         bot.is_completed = 0
                         bot.save()                                                
                         # log
-                        TradeBotLogCommand1.objects.create(
-                            message="no detecting pump for " + ticker,
-                            is_error=True,
-                            trade_market=ticker
-                        );                                                                                                                                                                                                                               
+                                                                                                                                                                                                                                                      
                                 
                 # get fresh list bots
-                bots = TradeBotCommand.objects.filter(is_completed=0)                                
+                if (param.lower() == 'buy'):
+                    bots = TradeBuyBotCommand.objects.filter(is_completed=0)                                                          
+                else:
+                    bots = TradeBotCommand.objects.filter(is_completed=0)                             
                 serializer = TradeapiSerializer(bots, many=True)                                                                        
                 return Response(serializer.data)                       
         except Exception as e:
@@ -252,13 +282,12 @@ class TradeBotCommandListView(APIView):
                 
                 up_down_value = self.is_up_or_down(add_average_min_df)
                 if up_down_value == self.GRAPH_UP:
-                    compare_vol = average_vol*7
+                    compare_vol = average_vol*0.2
                     if now_vol >= compare_vol:
                         print('\033[30m', time.strftime('%m-%d %H:%M:%S'), ticker, "구매")                        
                         # buy_log = upbit.buy_market_order(ticker, total_weight)                                                
         except:
             print("error")
-
 
 class TradeBotCommandDelete(APIView):
     permission_classes = (IsAuthenticated,)
@@ -274,8 +303,8 @@ class TradeBotCommandLog(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         try:                                    
-            logs = TradeBotLogCommand1.objects.all()
+            logs = TradeBotLogCommand1.objects.filter(is_error=False).order_by('-timestamp')[:10]
             serializer = TradeBotCommandSerializer(logs, many=True)                                                                        
             return Response(serializer.data)                       
         except Exception as e:
-            return Response(e)            
+            return Response(e)                    

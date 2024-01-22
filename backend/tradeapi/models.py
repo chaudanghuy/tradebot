@@ -10,6 +10,15 @@ class TradeBotCommand(models.Model):
     is_expired = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
     
+class TradeBuyBotCommand(models.Model):
+    market = models.CharField(max_length=20)
+    timestamp = models.DateTimeField(auto_now_add=True)    
+    trade_price = models.FloatField()
+    trade_volume = models.FloatField()
+    ask_bid = models.CharField(max_length=10)
+    is_expired = models.BooleanField(default=False)
+    is_completed = models.BooleanField(default=False)    
+    
 class TradeBotCommandDetail(models.Model):
     command = models.ForeignKey(TradeBotCommand, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)

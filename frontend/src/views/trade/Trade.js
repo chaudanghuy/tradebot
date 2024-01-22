@@ -37,6 +37,9 @@ const Trade = () => {
   const [tradeBotTotal, setTradeBotTotal] = React.useState(0)
   const [isDetecingPump, setIsDetecingPump] = React.useState(false)
   const [balance, setBalance] = React.useState(0)
+  const state = {
+    button: 1
+  };
   const [toast, addToast] = useState(0)
   const toaster = useRef()
 
@@ -132,6 +135,7 @@ const Trade = () => {
 
   const handleSubmitBot = async (e) => {
     e.preventDefault()
+    const saleOrBuy = (state.button == 1) ? 'buy' : 'sale';
     const market = document.getElementById('market_bot').value
     const ask_bid = document.getElementById('ask_bid_bot').value
     const trade_price = document.getElementById('trade_price_bot').value
@@ -143,7 +147,7 @@ const Trade = () => {
       volume
     }
 
-    const response = await axios.post('http://127.0.0.1:8000/trade/upbit/bot', data, {
+    const response = await axios.post(`http://127.0.0.1:8000/trade/upbit/bot/${saleOrBuy}`, data, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -218,7 +222,7 @@ const Trade = () => {
         <CCol xs={12}>
           <CCard className="mb-4">
             <CCardHeader>
-              <strong>Create BOT</strong> <small>코인 자동매매 </small>
+              <strong>New BOT</strong> <small>코인 자동매매 </small>
             </CCardHeader>
             <CCardBody>
               <DocsExample href="forms/form-control">
@@ -226,7 +230,6 @@ const Trade = () => {
                   <div className="mb-3">
                     <CFormLabel htmlFor="exampleFormControlInput1">Coin</CFormLabel>
                     <CFormSelect aria-label="Default select example" id='market_bot'>
-                      <option>현재가</option>
                       {coins.map((coin) => (
                         <option value={coin.market}>{coin.english_name}</option>
                       ))}
@@ -235,7 +238,6 @@ const Trade = () => {
                   <div className="mb-3">
                     <CFormLabel htmlFor="exampleFormControlTextarea1">Order Price</CFormLabel>
                     <CFormSelect aria-label="Default select example" id='ask_bid_bot'>
-                      <option>주문 유형 (필수)</option>
                       <option value="limit">Limit</option>
                       <option value="price">Price</option>
                       <option value="market">Market</option>
@@ -244,7 +246,7 @@ const Trade = () => {
                   <div className="mb-3">
                     <CFormLabel htmlFor="exampleFormControlInput1">Fix Order Price (KRW)</CFormLabel>
                     <CFormInput
-                      type="number"
+                      type="text"
                       id="trade_price_bot"
                       placeholder="Fixed Price"
                     />
@@ -252,13 +254,14 @@ const Trade = () => {
                   <div className="mb-3">
                     <CFormLabel htmlFor="exampleFormControlInput1">Volume</CFormLabel>
                     <CFormInput
-                      type="number"
+                      type="text"
                       id="volume_bot"
                       placeholder="Total Volume"
                     />
                   </div>
                   <div className='mb-3'>
-                    <button type="submit" class="btn btn-primary">CREATE</button>
+                    <button type="submit" onClick={() => (state.button = 1)} class="btn btn-primary me-1">BUY</button>
+                    <button type="submit" onClick={() => (state.button = 2)} class="btn btn-success">SALE</button>
                   </div>
                 </CForm>
               </DocsExample>
