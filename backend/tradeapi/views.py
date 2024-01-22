@@ -11,6 +11,7 @@ import pyupbit
 from django.http import JsonResponse
 import pandas as pd
 import time
+from django.conf import settings
 
 
 # Create your views here.
@@ -39,11 +40,9 @@ class TradeBotAccountView(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         try:
-            access_key = "6j9pBvExB9jWxVwgZb8I6JcsGtOqVSdUUOCNeGBQ"
-            screet_key = "2bxUSMoljgnR6c5OhImHUtpJoWH6LY7nF61CdYqH"
-            
-            # client = Upbit(access_key, screet_key)
-            # api_keys = client.APIKey.APIKey_info()
+            access_key = settings.ACCESS_UPBIT_KEY
+            screet_key = settings.SECRET_UPBIT_KEY
+                        
             upbit = pyupbit.Upbit(access_key, screet_key)
             
             return Response(upbit.get_balances())
@@ -54,8 +53,8 @@ class TradeBotMarketView(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         try:
-            access_key = "6j9pBvExB9jWxVwgZb8I6JcsGtOqVSdUUOCNeGBQ"
-            screet_key = "2bxUSMoljgnR6c5OhImHUtpJoWH6LY7nF61CdYqH"
+            access_key = settings.ACCESS_UPBIT_KEY
+            screet_key = settings.SECRET_UPBIT_KEY
             
             client = Upbit(access_key, screet_key)
             markets = client.Market.Market_info_all()
@@ -69,8 +68,8 @@ class TradeBotMarketCoin(APIView):
     def get(self, request):
         try:
             if request.method == 'GET':
-                access_key = "6j9pBvExB9jWxVwgZb8I6JcsGtOqVSdUUOCNeGBQ"
-                screet_key = "2bxUSMoljgnR6c5OhImHUtpJoWH6LY7nF61CdYqH"
+                access_key = settings.ACCESS_UPBIT_KEY
+                screet_key = settings.SECRET_UPBIT_KEY
                 
                 upbit = pyupbit.Upbit(access_key, screet_key)
                 
@@ -228,8 +227,8 @@ class TradeBotCommandListView(APIView):
         
     def make_df_add_average_volume(ticker, interval, rolling_value, count=20):
         try:
-            access_key = "6j9pBvExB9jWxVwgZb8I6JcsGtOqVSdUUOCNeGBQ"
-            screet_key = "2bxUSMoljgnR6c5OhImHUtpJoWH6LY7nF61CdYqH"
+            access_key = settings.ACCESS_UPBIT_KEY
+            screet_key = settings.SECRET_UPBIT_KEY
                 
             upbit = pyupbit.Upbit(access_key, screet_key)
             df = pyupbit.get_ohlcv(ticker, interval, count)
@@ -241,8 +240,8 @@ class TradeBotCommandListView(APIView):
     
     def buy_process(self, ticker, total_weight):
         try:
-            access_key = "6j9pBvExB9jWxVwgZb8I6JcsGtOqVSdUUOCNeGBQ"
-            screet_key = "2bxUSMoljgnR6c5OhImHUtpJoWH6LY7nF61CdYqH"
+            access_key = settings.ACCESS_UPBIT_KEY
+            screet_key = settings.SECRET_UPBIT_KEY
                 
             upbit = pyupbit.Upbit(access_key, screet_key)
             if upbit.get_avg_buy_price(ticker) == 0:

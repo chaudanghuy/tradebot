@@ -18,8 +18,8 @@ from datetime import timedelta
 env = environ.Env()
 environ.Env.read_env()
 
-ACCESS_KEY = env('ACCESS_KEY')
-SECRET_KEY = env('SECRET_KEY')
+ACCESS_UPBIT_KEY = env('ACCESS_UPBIT_KEY')
+SECRET_UPBIT_KEY = env('SECRET_UPBIT_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
