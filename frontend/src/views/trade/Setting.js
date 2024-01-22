@@ -10,6 +10,8 @@ import {
   CFormLabel,
   CFormTextarea,
   CRow,
+  CFormCheck,
+  CFormSwitch,
 } from '@coreui/react'
 import { DocsExample } from '../../components'
 
@@ -56,6 +58,12 @@ const Setting = () => {
                 </CFormLabel>
                 <div className="col-sm-10">
                   <CFormInput type="text" id="intervalTime" value="1000" />
+                </div>
+              </CRow>
+              <CRow className="mb-3">
+                <div className="col-sm-10">
+                  <CFormCheck id="flexCheckDefault" label="Deactive BOT(s) if expire 1 day" />
+                  <CFormCheck id="flexCheckChecked" label="Notify me" defaultChecked />
                 </div>
               </CRow>
               <div className="col-auto">
