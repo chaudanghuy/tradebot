@@ -13,7 +13,7 @@ import { CChartBar, CChartLine } from '@coreui/react-chartjs'
 import CIcon from '@coreui/icons-react'
 import { cilArrowBottom, cilArrowTop, cilOptions } from '@coreui/icons'
 
-const TradeCoin = ({ price, candlePriceList, tradeBotTotal, isDetectingPump }) => {
+const TradeCoin = ({ price, candlePriceList, tradeBotTotal, isDetectingPump, balance }) => {
   return (
     <CRow>
       <CCol sm={6} lg={3}>
@@ -22,13 +22,13 @@ const TradeCoin = ({ price, candlePriceList, tradeBotTotal, isDetectingPump }) =
           color="primary"
           value={
             <>
-              KWR{' '}
+              {balance}{' '}
               {/* <span className="fs-6 fw-normal">
                 (-12.4% <CIcon icon={cilArrowBottom} />)
               </span> */}
             </>
           }
-          title="My Account"
+          title="My Wallet"
           action={
             <CDropdown alignment="end">
               <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -268,7 +268,7 @@ const TradeCoin = ({ price, candlePriceList, tradeBotTotal, isDetectingPump }) =
           color="danger"
           value={
             <>
-              {tradeBotTotal}{' '}
+              {tradeBotTotal ? tradeBotTotal : 0}{' '}
               {/* <span className="fs-6 fw-normal">
                 (-23.6% <CIcon icon={cilArrowBottom} />)
               </span> */}

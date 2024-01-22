@@ -73,7 +73,7 @@ class TradeBotMarketCoin(APIView):
                 
                 upbit = pyupbit.Upbit(access_key, screet_key)
                 
-                market = request.GET.get('market')
+                market = request.GET.get('market')                                
                 
                 # current price
                 price = pyupbit.get_current_price([{market}])
@@ -121,8 +121,7 @@ class TradeBotMarketCoin(APIView):
                         if now_vol >= compare_vol:     
                             is_detecting_pump = True
                 except:
-                        is_detecting_pump = False    
-                
+                    is_detecting_pump = False                    
                 
                 # get list TradeBotCommand with market param and is_completed = 0 and count total                
                 tradeBotTotal = TradeBotCommand.objects.filter(market=market, is_completed=0).count()
@@ -135,8 +134,7 @@ class TradeBotMarketCoin(APIView):
                     'candle': formatted_data,
                     'formatted_candle_price': formatted_candle_price,
                     'tradeBotTotal': tradeBotTotal,
-                    'is_detecting_pump': is_detecting_pump,
-                    # 'tradeBots': tradeBots
+                    'is_detecting_pump': is_detecting_pump,                    
                 }, safe=False)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)   

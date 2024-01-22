@@ -36,6 +36,7 @@ const Trade = () => {
   const [candlePriceList, setCandlePriceList] = React.useState('')
   const [tradeBotTotal, setTradeBotTotal] = React.useState(0)
   const [isDetecingPump, setIsDetecingPump] = React.useState(false)
+  const [balance, setBalance] = React.useState(0)
   const [toast, addToast] = useState(0)
   const toaster = useRef()
 
@@ -73,12 +74,32 @@ const Trade = () => {
       }).catch(err => {
         console.log(err)
       });
+
+      getWallet();
     }
 
     if (selectedCoin) {
       getSelectedCoin();
     }
   });
+
+  const getWallet = async () => {
+    try {
+      axios.get('http://127.0.0.1:8000/trade/upbit/account', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          Accept: 'application/json',
+        }
+      }).then(res => {
+        setBalance(res.data[0].balance)
+      }).catch(err => {
+        console.log(err)
+      });
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const getSelectedCoin = async () => {
     try {
@@ -155,7 +176,7 @@ const Trade = () => {
             </CCardBody>
           </CCard>
         </CCol>
-        <TradeCoin price={currentPrice} candlePriceList={candlePriceList} tradeBotTotal={tradeBotTotal} isDetecingPump={isDetecingPump} />
+        <TradeCoin price={currentPrice} candlePriceList={candlePriceList} tradeBotTotal={tradeBotTotal} isDetecingPump={isDetecingPump} balance={balance} />
         <CCol xs={12}>
           <CCard className="mb-4">
             <CCardHeader>
