@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import TradeBotCommand, TradeBotCommandDetail, TradeBotLogCommand1, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory, TradeBotSetting
+from .models import TradeBotCommand, TradeBotCommandDetail, TradeBotLogCommand1, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory, TradeBotSetting, TradeCoin
 
 class TradeapiSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,3 +10,8 @@ class TradeBotCommandSerializer(serializers.ModelSerializer):
     class Meta:
         model = TradeBotLogCommand1
         fields = '__all__'        
+
+class TradeCoinSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TradeCoin
+        fields = '__all__'           

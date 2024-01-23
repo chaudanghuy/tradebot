@@ -66,7 +66,7 @@ const Trade = () => {
 
   React.useEffect(() => {
     if (coins.length <= 0) {
-      axios.get('http://127.0.0.1:8000/trade/upbit/market', {
+      axios.get('http://127.0.0.1:8000/trade/upbit/coin', {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -138,7 +138,7 @@ const Trade = () => {
     const saleOrBuy = (state.button == 1) ? 'buy' : 'sale';
     const market = document.getElementById('market_bot').value
     const ask_bid = document.getElementById('ask_bid_bot').value
-    const trade_price = document.getElementById('trade_price_bot').value
+    const trade_price = 999
     const volume = document.getElementById('volume_bot').value
     const data = {
       market,
@@ -173,7 +173,7 @@ const Trade = () => {
                 <CFormSelect aria-label="Default select example" onChange={handleSelectedCoin}>
                   <option>현재가</option>
                   {coins.map((coin) => (
-                    <option value={coin.market}>{coin.english_name}</option>
+                    <option value={coin.market}>{coin.name}</option>
                   ))}
                 </CFormSelect>
               </DocsExample>
@@ -231,7 +231,7 @@ const Trade = () => {
                     <CFormLabel htmlFor="exampleFormControlInput1">Coin</CFormLabel>
                     <CFormSelect aria-label="Default select example" id='market_bot'>
                       {coins.map((coin) => (
-                        <option value={coin.market}>{coin.english_name}</option>
+                        <option value={coin.market}>{coin.name}</option>
                       ))}
                     </CFormSelect>
                   </div>
@@ -244,14 +244,6 @@ const Trade = () => {
                     </CFormSelect>
                   </div>
                   <div className="mb-3">
-                    <CFormLabel htmlFor="exampleFormControlInput1">Fix Order Price (KRW)</CFormLabel>
-                    <CFormInput
-                      type="text"
-                      id="trade_price_bot"
-                      placeholder="Fixed Price"
-                    />
-                  </div>
-                  <div className="mb-3">
                     <CFormLabel htmlFor="exampleFormControlInput1">Volume</CFormLabel>
                     <CFormInput
                       type="text"
@@ -261,7 +253,6 @@ const Trade = () => {
                   </div>
                   <div className='mb-3'>
                     <button type="submit" onClick={() => (state.button = 1)} class="btn btn-primary me-1">BUY</button>
-                    <button type="submit" onClick={() => (state.button = 2)} class="btn btn-success">SALE</button>
                   </div>
                 </CForm>
               </DocsExample>

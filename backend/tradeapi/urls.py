@@ -10,11 +10,14 @@ urlpatterns = [
     path('upbit/market', views.TradeBotMarketView.as_view(), name='upbitMarket'),
     path('upbit/market/coin', views.TradeBotMarketCoin.as_view(), name='upbitMarketCoin'),
     
+    # coin
+    path('upbit/coin', views.TradeCoinView.as_view(), name='coin'),
+    
     # buy/sale bot
     path('upbit/bot/<str:param>', views.TradeBotCommandView.as_view(), name='upbitBotCommand'),    
     path('upbit/bot/list/<str:param>', views.TradeBotCommandListView.as_view(), name='upbitBotCommandDetail'),    
     
-    path('upbit/bot/delete/<str:param>', views.TradeBotCommandDelete.as_view(), name='upbitBotCommandDelete'),
+    path('upbit/bot/delete/<str:param>', views.TradeBuyBotCommandDelete.as_view(), name='upbitBotCommandDelete'),
     path('upbit/bot/log', views.TradeBotCommandLog.as_view(), name='upbitBotLogCommand'),
     
     # api logout

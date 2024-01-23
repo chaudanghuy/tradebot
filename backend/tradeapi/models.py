@@ -9,7 +9,7 @@ class TradeBotCommand(models.Model):
     ask_bid = models.CharField(max_length=10)
     is_expired = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
-    
+        
 class TradeBuyBotCommand(models.Model):
     market = models.CharField(max_length=20)
     timestamp = models.DateTimeField(auto_now_add=True)    
@@ -67,5 +67,11 @@ class TradeBotSetting(models.Model):
     secretKey = models.CharField(max_length=200)
     currency = models.CharField(max_length=10)
     time_sleep = models.IntegerField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)    
+    
+class TradeCoin(models.Model):
+    name = models.CharField(max_length=20)
+    market = models.CharField(max_length=20)
     timestamp = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)    
