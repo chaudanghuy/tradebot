@@ -177,7 +177,9 @@ class TradeBotCommandListView(APIView):
         
         access_key = settings.ACCESS_UPBIT_KEY
         screet_key = settings.SECRET_UPBIT_KEY                
-        upbit = pyupbit.Upbit(access_key, screet_key)       
+        upbit = pyupbit.Upbit(access_key, screet_key)     
+        
+        balance = upbit.get_balance("KRW")  
 
         try:
             if request.method == 'GET':
@@ -216,9 +218,8 @@ class TradeBotCommandListView(APIView):
                                 if now_vol >= compare_vol:     
                                     bot.is_completed = 1
                                     bot.save()                                                                                       
-				    balance = upbit.get_balance("KRW")
-				    # total weight
-				    total_weight = balance * bot.trade_volume / 100
+				                    # total weight
+                                    total_weight = balance * bot.trade_volume / 100
                                     buy_log = upbit.buy_market_order(ticker, total_weight)                                                       
                         except:                        
                             bot.is_completed = 0
