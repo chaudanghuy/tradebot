@@ -9,6 +9,11 @@ def my_cron_jobs():
     
     balance = upbit.get_balance("KRW")    
     
+    log = TradeBotLogCommand1()
+    log.message = 'Log start'
+    log.trade_market = ticker
+    log.save()
+    
     try:
       bots = TradeBuyBotCommand.objects.filter(is_completed=0) 
                 
