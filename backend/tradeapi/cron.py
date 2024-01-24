@@ -7,12 +7,7 @@ def my_cron_jobs():
     screet_key = settings.SECRET_UPBIT_KEY                
     upbit = pyupbit.Upbit(access_key, screet_key)    
     
-    balance = upbit.get_balance("KRW")    
-    
-    log = TradeBotLogCommand1()
-    log.message = 'Log start'
-    log.trade_market = 'KRW'
-    log.save()
+    balance = upbit.get_balance("KRW")            
     
     try:
       bots = TradeBuyBotCommand.objects.filter(is_completed=0) 
