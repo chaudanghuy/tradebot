@@ -19,6 +19,9 @@ from django.views.generic.base import TemplateView
 from rest_framework import routers
 from tradeapi import views
 from rest_framework_simplejwt import views as jwt_views
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 router = routers.DefaultRouter()
 router.register(r'tradeapi', views.TradeapiView, 'tradeapi')
@@ -40,4 +43,4 @@ urlpatterns = [
     
     # Tradebot view
     path('trade/', include('tradeapi.urls')),
-]
+]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

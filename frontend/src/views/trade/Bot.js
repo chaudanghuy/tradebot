@@ -56,7 +56,7 @@ const Bot = () => {
   const getBuyBotList = async () => {
     try {
       const { data } = await axios.get(
-        'http://127.0.0.1:8000/trade/upbit/bot/list/buy', {
+        'http://51.79.49.245/trade/upbit/bot/list/buy', {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -74,7 +74,7 @@ const Bot = () => {
   const deleteBot = async (botId) => {
     try {
       const { data } = await axios.delete(
-        `http://127.0.0.1:8000/trade/upbit/bot/delete/${botId}`, {
+        `http://51.79.49.245/trade/upbit/bot/delete/${botId}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,

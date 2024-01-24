@@ -9,7 +9,7 @@ const Private = ({ Component }) => {
       (async () => {
         try {
           const { data } = await axios.get(
-            'http://127.0.0.1:8000/trade/home', {
+            'http://51.79.49.245/trade/home', {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${localStorage.getItem('access_token')}`,

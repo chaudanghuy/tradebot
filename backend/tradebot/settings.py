@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 import environ
 from datetime import timedelta
+import os
 
 # Initialise environment variables
 env = environ.Env()
@@ -34,7 +35,7 @@ SECRET_KEY = 'django-insecure-v-_=*jc5)6+1534*#!hpczxih(dz&#n586y68c$#mo1zi@(kjj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["51.79.49.245"]
 
 
 # Application definition
@@ -48,9 +49,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bootstrap5',
     'corsheaders',
-    'rest_framework',    
+    'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
-    'tradeapi',    
+    'django_crontab',
+    'tradeapi',
 ]
 
 MIDDLEWARE = [
@@ -133,6 +135,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -157,3 +162,12 @@ SIMPLE_JWT = {
      'ROTATE_REFRESH_TOKENS': True,
      'BLACKLIST_AFTER_ROTATION': True
 }
+
+CRONJOBS = [
+    ('*/1 * * * *', 'tradeapi.cron.MyCronJob')
+]
+
+
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")

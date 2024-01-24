@@ -37,7 +37,7 @@ const Login = () => {
 
     try {
       const { data } = await axios.post(
-        'http://127.0.0.1:8000/token',
+        'http://51.79.49.245/token',
         { username, password },
         config
       )

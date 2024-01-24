@@ -177,8 +177,8 @@ class TradeBotCommandListView(APIView):
         
         access_key = settings.ACCESS_UPBIT_KEY
         screet_key = settings.SECRET_UPBIT_KEY                
-        upbit = pyupbit.Upbit(access_key, screet_key)        
-        
+        upbit = pyupbit.Upbit(access_key, screet_key)       
+
         try:
             if request.method == 'GET':
                 # get list bots with is_completed = 0         
@@ -187,11 +187,12 @@ class TradeBotCommandListView(APIView):
                 else:
                     bots = TradeBotCommand.objects.filter(is_completed=0)  
                 
-                # loop through bots and check if it is up or down
+                # loop through bots and check if it is up or down		
                 market_list_monitor = []
-                for bot in bots:      
-                    if upbit.get_avg_buy_price(ticker) == 0:              
-                        ticker = bot.market
+                for bot in bots:
+                    ticker = bot.market                
+                    if upbit.get_avg_buy_price(ticker) == 0:        
+                        ticker = bot.market                           
                         data_count = 20
                         df = pyupbit.get_ohlcv(ticker, "minute1", 20)
                         try:                            
@@ -211,26 +212,34 @@ class TradeBotCommandListView(APIView):
                                 up_down_value = 10                                                                                                                   
                                 
                             if up_down_value == 10:
-                                compare_vol = average_vol*7
+                                compare_vol = average_vol*3
                                 if now_vol >= compare_vol:     
                                     bot.is_completed = 1
                                     bot.save()                                                                                       
-                                    # buy_log = upbit.buy_market_order(ticker, total_weight)                                                       
+				    balance = upbit.get_balance("KRW")
+				    # total weight
+				    total_weight = balance * bot.trade_volume / 100
+                                    buy_log = upbit.buy_market_order(ticker, total_weight)                                                       
                         except:                        
                             bot.is_completed = 0
                             bot.save()                                                
-                            # log
+                            # log		
                                                                                                                                                                                                                                                       
-                                
+                               
                 # get fresh list bots
-                if (param.lower() == 'buy'):
-                    bots = TradeBuyBotCommand.objects.all()                                                          
+                if (param == 'buy'):
+                    bots = TradeBuyBotCommand.objects.filter(is_completed=0)                                                          
                 else:
-                    bots = TradeBotCommand.objects.all()                             
+                    bots = TradeBotCommand.objects.filter(is_completed=0)
                 serializer = TradeapiSerializer(bots, many=True)                                                                        
                 return Response(serializer.data)                       
         except Exception as e:
-            return Response(e)        
+            if (param == 'buy'):
+                bots = TradeBuyBotCommand.objects.filter(is_completed=0)                                                          
+            else:
+                bots = TradeBotCommand.objects.filter(is_completed=0)
+            serializer = TradeapiSerializer(bots, many=True)                                                                        
+            return Response(serializer.data)
 
 class TradeBotCommandDelete(APIView):
     permission_classes = (IsAuthenticated,)
