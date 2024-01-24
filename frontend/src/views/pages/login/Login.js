@@ -17,6 +17,8 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import axios from 'axios'
 
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT
+
 const Login = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -37,7 +39,7 @@ const Login = () => {
 
     try {
       const { data } = await axios.post(
-        'http://51.79.49.245/token',
+        `${API_ENDPOINT}/token`,
         { username, password },
         config
       )

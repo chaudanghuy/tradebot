@@ -46,7 +46,12 @@ class MyCronJob(CronJobBase):
                       bot.is_completed = 1
                       bot.save()                                                                                       
                       buy_log = upbit.buy_market_order(ticker, bot.trade_volume)                                                       
-		      print(buy_log)
+                      print(buy_log)
+                      # write TradeBotLogCommand1
+                      log = TradeBotLogCommand1()
+                      log.message = 'Buy order is completed'
+                      log.trade_market = ticker
+                      log.save()
               except:                        
                 bot.is_completed = 0
                 bot.save()                                                                     

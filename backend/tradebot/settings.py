@@ -164,7 +164,7 @@ SIMPLE_JWT = {
 }
 
 CRONJOBS = [
-    ('*/1 * * * *', 'tradeapi.cron.MyCronJob')
+    ('*/2 * * * *', 'tradeapi.cron.MyCronJob')
 ]
 
 

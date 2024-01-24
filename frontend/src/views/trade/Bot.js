@@ -22,10 +22,15 @@ import {
 import { DocsExample } from '../../components'
 import axios from 'axios'
 
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT
+
 const Bot = () => {
   const [buyBots, setBuyBots] = React.useState([])
   const [toast, addToast] = useState(0)
   const toaster = useRef()
+  const state = {
+    firsTime: 0
+  };
 
   const notifyToast = (message) => {
     return <CToast title="Notification">
@@ -49,14 +54,14 @@ const Bot = () => {
   }
 
   React.useEffect(() => {
-    const intervalId = setInterval(getBuyBotList, 10000);
+    const intervalId = setInterval(getBuyBotList, 5000);
     return () => clearInterval(intervalId);
   });
 
   const getBuyBotList = async () => {
     try {
       const { data } = await axios.get(
-        'http://51.79.49.245/trade/upbit/bot/list/buy', {
+        `${API_ENDPOINT}/trade/upbit/bot/list/buy`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -74,7 +79,7 @@ const Bot = () => {
   const deleteBot = async (botId) => {
     try {
       const { data } = await axios.delete(
-        `http://51.79.49.245/trade/upbit/bot/delete/${botId}`, {
+        `${API_ENDPOINT}/trade/upbit/bot/delete/${botId}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,

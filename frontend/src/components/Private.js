@@ -2,6 +2,8 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { Navigate } from 'react-router-dom'
 
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT
+
 const Private = ({ Component }) => {
   const [message, setMessage] = useState('')
   useEffect(() => {
@@ -9,7 +11,7 @@ const Private = ({ Component }) => {
       (async () => {
         try {
           const { data } = await axios.get(
-            'http://51.79.49.245/trade/home', {
+            `${API_ENDPOINT}/trade/home`, {
             headers: {
               'Content-Type': 'application/json',
               Authorization: `Bearer ${localStorage.getItem('access_token')}`,

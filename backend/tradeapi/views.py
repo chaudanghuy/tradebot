@@ -187,51 +187,7 @@ class TradeBotCommandListView(APIView):
                 if (param == 'buy'):
                     bots = TradeBuyBotCommand.objects.filter(is_completed=0)                                                          
                 else:
-                    bots = TradeBotCommand.objects.filter(is_completed=0)  
-                
-                # loop through bots and check if it is up or down		
-                market_list_monitor = []
-                for bot in bots:
-                    ticker = bot.market                
-                    if upbit.get_avg_buy_price(ticker) == 0:        
-                        ticker = bot.market                           
-                        data_count = 20
-                        df = pyupbit.get_ohlcv(ticker, "minute1", 20)
-                        try:                            
-                            df = pyupbit.get_ohlcv(ticker, "minute1", count=20)
-                            df['average'] = df['volume'].rolling(window=10).mean().shift(1)
-                            add_average_min_df = df
-                            average_vol = add_average_min_df['average'][data_count-1]
-                            now_vol = add_average_min_df['volume'][data_count-1]
-                                                  
-                            last_close = add_average_min_df['close'][-1]
-                            last_open_price = add_average_min_df['open'][-1]
-                            
-                            # GRAPH_DOWN = 20
-                            up_down_value = 20
-                            if last_close - last_open_price > 0:                                
-                                # GRAPH_UP = 10
-                                up_down_value = 10                                                                                                                   
-                                
-                            if up_down_value == 10:
-                                compare_vol = average_vol*3
-                                if now_vol >= compare_vol:     
-                                    bot.is_completed = 1
-                                    bot.save()                                                                                       
-				                    # total weight
-                                    total_weight = balance * bot.trade_volume / 100
-                                    buy_log = upbit.buy_market_order(ticker, total_weight)                                                       
-                        except:                        
-                            bot.is_completed = 0
-                            bot.save()                                                
-                            # log		
-                                                                                                                                                                                                                                                      
-                               
-                # get fresh list bots
-                if (param == 'buy'):
-                    bots = TradeBuyBotCommand.objects.filter(is_completed=0)                                                          
-                else:
-                    bots = TradeBotCommand.objects.filter(is_completed=0)
+                    bots = TradeBotCommand.objects.filter(is_completed=0)                                  
                 serializer = TradeapiSerializer(bots, many=True)                                                                        
                 return Response(serializer.data)                       
         except Exception as e:

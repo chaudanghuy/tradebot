@@ -27,6 +27,8 @@ import { DocsExample } from '../../components'
 import TradeCoin from './TradeCoin'
 import axios from 'axios'
 
+const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT
+
 const Trade = () => {
 
   const [coins, setCoins] = React.useState([])
@@ -66,7 +68,7 @@ const Trade = () => {
 
   React.useEffect(() => {
     if (coins.length <= 0) {
-      axios.get('http://51.79.49.245/trade/upbit/coin', {
+      axios.get(`${API_ENDPOINT}/trade/upbit/coin`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -88,7 +90,7 @@ const Trade = () => {
 
   const getWallet = async () => {
     try {
-      axios.get('http://51.79.49.245/trade/upbit/account', {
+      axios.get(`${API_ENDPOINT}/trade/upbit/account`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -107,7 +109,7 @@ const Trade = () => {
 
   const getSelectedCoin = async () => {
     try {
-      axios.get(`http://51.79.49.245/trade/upbit/market/coin?market=${selectedCoin}`, {
+      axios.get(`${API_ENDPOINT}/trade/upbit/market/coin?market=${selectedCoin}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
@@ -147,7 +149,7 @@ const Trade = () => {
       volume
     }
 
-    const response = await axios.post(`http://51.79.49.245/trade/upbit/bot/${saleOrBuy}`, data, {
+    const response = await axios.post(`${API_ENDPOINT}/trade/upbit/bot/${saleOrBuy}`, data, {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${localStorage.getItem('access_token')}`,
