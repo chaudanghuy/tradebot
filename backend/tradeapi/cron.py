@@ -11,7 +11,7 @@ def my_cron_jobs():
     
     log = TradeBotLogCommand1()
     log.message = 'Log start'
-    log.trade_market = ticker
+    log.trade_market = 'KRW'
     log.save()
     
     try:
