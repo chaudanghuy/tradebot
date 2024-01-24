@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TradeBuyBotCommand, TradeCoin
+from .models import TradeBuyBotCommand, TradeCoin, TradeBotLogCommand1
 
 # Register your models here.
 class TradeBuyBotCommandAdmin(admin.ModelAdmin):
@@ -11,3 +11,8 @@ class TradeCoinAdmin(admin.ModelAdmin):
     list_display = ('name', 'market')    
 
 admin.site.register(TradeCoin, TradeCoinAdmin)
+
+class TradeBotLogCommandAdmin(admin.ModelAdmin):
+    list_display = ('message', 'trade_market', 'timestamp')
+    
+admin.site.register(TradeBotLogCommand1, TradeBotLogCommandAdmin)    
