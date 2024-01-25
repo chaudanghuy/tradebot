@@ -212,11 +212,31 @@ class TradeBuyBotCommandDelete(APIView):
     permission_classes = (IsAuthenticated,)
     def delete(self, request, param):
         try:
-            # find bot by market param
-            bot = TradeBuyBotCommand.objects.filter(market=param).update(is_completed=1)            
+            # find bot by market param and delete            
+            bot = TradeBuyBotCommand.objects.filter(market=param).delete()                        
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)        
+        
+class TradeBuyBotCommandActive(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, param):
+        try:
+            # find bot by market param and change to is_completed           
+            bot = TradeBuyBotCommand.objects.filter(market=param).update(is_expired=0)                        
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST) 
+        
+class TradeBuyBotCommandStop(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request, param):
+        try:
+            # find bot by market param and change to is_completed           
+            bot = TradeBuyBotCommand.objects.filter(market=param).update(is_expired=1)                        
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)           
         
 class TradeBotCommandLog(APIView):
     permission_classes = (IsAuthenticated,)

@@ -54,7 +54,7 @@ const Bot = () => {
   }
 
   React.useEffect(() => {
-    const intervalId = setInterval(getBuyBotList, 5000);
+    const intervalId = setInterval(getBuyBotList, 2000);
     return () => clearInterval(intervalId);
   });
 
@@ -87,7 +87,43 @@ const Bot = () => {
         }
       }
       );
-      addToast(notifyToast("Delete Bot Success."))
+      addToast(notifyToast("봇 성공 삭제."))
+    } catch (error) {
+      console.error(error)
+    }
+    getBuyBotList();
+  }
+
+  const activeBot = async (botId) => {
+    try {
+      const { data } = await axios.post(
+        `${API_ENDPOINT}/trade/upbit/bot/active/${botId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          Accept: 'application/json',
+        }
+      }
+      );
+      addToast(notifyToast("활성 구매 봇"))
+    } catch (error) {
+      console.error(error)
+    }
+    getBuyBotList();
+  }
+
+  const stopBot = async (botId) => {
+    try {
+      const { data } = await axios.post(
+        `${API_ENDPOINT}/trade/upbit/bot/stop/${botId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          Accept: 'application/json',
+        }
+      }
+      );
+      addToast(notifyToast("구매 봇 중지"))
     } catch (error) {
       console.error(error)
     }
@@ -125,8 +161,15 @@ const Bot = () => {
                         <CTableDataCell>{bot.market}</CTableDataCell>
                         <CTableDataCell>{bot.trade_volume}</CTableDataCell>
                         <CTableDataCell>{bot.ask_bid}</CTableDataCell>
-                        <CTableDataCell>{bot.is_completed ? <CBadge color="success">성공</CBadge> : <CBadge color="primary">달리기</CBadge>}</CTableDataCell>
-                        <CTableDataCell><button className="btn btn-danger" onClick={() => deleteBot(bot.market)}>Delete</button></CTableDataCell>
+                        <CTableDataCell>{bot.is_expired ? <CBadge color="warning">비활성</CBadge> : <CBadge color="primary">활동적인</CBadge>}</CTableDataCell>
+                        <CTableDataCell>
+                          {bot.is_expired ? (
+                            <button className="btn btn-primary me-1" onClick={() => activeBot(bot.market)}>Active</button>
+                          ) : (
+                            <button className="btn btn-warning me-1" onClick={() => stopBot(bot.market)}>Stop</button>
+                          )}
+                          <button className="btn btn-danger me-1" onClick={() => deleteBot(bot.market)}>Delete</button>
+                        </CTableDataCell>
                       </CTableRow>
                     ))}
                   </CTableBody>
