@@ -1,5 +1,6 @@
 import React from 'react'
 import Setting from './views/trade/Setting'
+import Refresh from './views/trade/Refresh'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -107,6 +108,7 @@ const routes = [
   { path: '/trade', name: 'Trade', element: Trade },
   { path: '/bot', name: 'Bot', element: Bot },
   { path: '/settings', name: 'Setting', element: Setting },
+  { path: '/clearCache', name: 'ClearCache', element: Refresh },
 ]
 
 export default routes
