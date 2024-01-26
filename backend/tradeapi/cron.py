@@ -5,12 +5,10 @@ from django.conf import settings
 def my_cron_jobs():
     access_key = settings.ACCESS_UPBIT_KEY
     screet_key = settings.SECRET_UPBIT_KEY                
-    upbit = pyupbit.Upbit(access_key, screet_key)    
-    
-    balance = upbit.get_balance("KRW")            
+    upbit = pyupbit.Upbit(access_key, screet_key)                        
     
     try:
-      bots = TradeBuyBotCommand.objects.filter(is_completed=0) 
+      bots = TradeBuyBotCommand.objects.filter(is_completed=0, is_expired=0) 
                 
       # loop through bots and check if it is up or down      
       for bot in bots:                          
@@ -42,12 +40,13 @@ def my_cron_jobs():
                       bot.is_completed = 1
                       bot.save()           
                       # buy
+                      balance = upbit.get_balance("KRW")
                       total_weight = balance * bot.trade_volume / 100                                                                            
                       buy_log = upbit.buy_market_order(ticker, total_weight)                                                       
                       print(buy_log)
                       # write TradeBotLogCommand1
                       log = TradeBotLogCommand1()
-                      log.message = 'Buy order is completed'
+                      log.message = 'Buy order is completed with total_weight: ' + str(total_weight)
                       log.trade_market = ticker
                       log.save()
               except:                        
