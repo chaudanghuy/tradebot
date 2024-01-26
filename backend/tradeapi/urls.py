@@ -21,8 +21,13 @@ urlpatterns = [
     path('upbit/bot/delete/<str:param>', views.TradeBuyBotCommandDelete.as_view(), name='upbitBotCommandDelete'),
     path('upbit/bot/active/<str:param>', views.TradeBuyBotCommandActive.as_view(), name='upbitBotCommandActive'),
     path('upbit/bot/stop/<str:param>', views.TradeBuyBotCommandStop.as_view(), name='upbitBotCommandStop'),
-    
+        
+    # log
     path('upbit/bot/log', views.TradeBotCommandLog.as_view(), name='upbitBotLogCommand'),
+    
+    # setting
+    path('upbit/setting', views.TradeBotSettingView.as_view(), name='upbitSetting'),
+    path('upbit/setting/update', views.TradeBotSettingUpdate.as_view(), name='upbitSettingDetail'),
     
     # api logout
     path('logout', views.LogoutView.as_view(), name='logout'),    

@@ -19,8 +19,14 @@ import os
 env = environ.Env()
 environ.Env.read_env()
 
+# Set environment variables
 ACCESS_UPBIT_KEY = env('ACCESS_UPBIT_KEY')
 SECRET_UPBIT_KEY = env('SECRET_UPBIT_KEY')
+DB_USER = env('DB_USER')
+DB_PASSWORD = env('DB_PASSWORD')
+DB_DATABASE = env('DB_DATABASE')
+DB_HOST = env('DB_HOST')
+DB_PORT = env('DB_PORT')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -94,8 +100,12 @@ WSGI_APPLICATION = 'tradebot.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': DB_DATABASE,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
 

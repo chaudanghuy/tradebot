@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets, status
-from .serializers import TradeapiSerializer, TradeBotCommandSerializer, TradeCoinSerializer
-from .models import TradeBotCommand, TradeBotCommandDetail, TradeBotLogCommand1, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory, TradeBuyBotCommand, TradeCoin
+from .serializers import TradeapiSerializer, TradeBotCommandSerializer, TradeCoinSerializer, TradeBotSettingSerializer
+from .models import TradeBotCommand, TradeBotCommandDetail, TradeBotLog, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory, TradeBuyBotCommand, TradeCoin, TradeBotSettingConfig
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -40,8 +40,9 @@ class TradeBotAccountView(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         try:
-            access_key = settings.ACCESS_UPBIT_KEY
-            screet_key = settings.SECRET_UPBIT_KEY
+            tradeSetting = TradeBotSettingConfig.objects.first()
+            access_key = tradeSetting.accessKey
+            screet_key = tradeSetting.secretKey
                         
             upbit = pyupbit.Upbit(access_key, screet_key)
             
@@ -59,8 +60,9 @@ class TradeBotMarketView(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         try:
-            access_key = settings.ACCESS_UPBIT_KEY
-            screet_key = settings.SECRET_UPBIT_KEY
+            tradeSetting = TradeBotSettingConfig.objects.first()
+            access_key = tradeSetting.accessKey
+            screet_key = tradeSetting.secretKey
             
             client = Upbit(access_key, screet_key)
             markets = client.Market.Market_info_all()
@@ -74,8 +76,9 @@ class TradeBotMarketCoin(APIView):
     def get(self, request):
         try:
             if request.method == 'GET':
-                access_key = settings.ACCESS_UPBIT_KEY
-                screet_key = settings.SECRET_UPBIT_KEY
+                tradeSetting = TradeBotSettingConfig.objects.first()
+                access_key = tradeSetting.accessKey
+                screet_key = tradeSetting.secretKey
                 
                 upbit = pyupbit.Upbit(access_key, screet_key)
                 
@@ -175,8 +178,9 @@ class TradeBotCommandListView(APIView):
     permission_classes = (IsAuthenticated,)    
     def get(self, request, param):
         
-        access_key = settings.ACCESS_UPBIT_KEY
-        screet_key = settings.SECRET_UPBIT_KEY                
+        tradeSetting = TradeBotSettingConfig.objects.first()
+        access_key = tradeSetting.accessKey
+        screet_key = tradeSetting.secretKey                
         upbit = pyupbit.Upbit(access_key, screet_key)     
         
         balance = upbit.get_balance("KRW")  
@@ -242,7 +246,7 @@ class TradeBotCommandLog(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         try:                                    
-            logs = TradeBotLogCommand1.objects.filter(is_error=False).order_by('-timestamp')[:10]
+            logs = TradeBotLog.objects.filter(is_error=False).order_by('-timestamp')[:10]
             serializer = TradeBotCommandSerializer(logs, many=True)                                                                        
             return Response(serializer.data)                       
         except Exception as e:
@@ -252,8 +256,47 @@ class TradeCoinView(APIView):
     permission_classes = (IsAuthenticated,)
     def get(self, request):
         try:
-            coins = TradeCoin.objects.all()            
-            serializer = TradeCoinSerializer(coins, many=True)                                                                        
-            return Response(serializer.data)                       
+            # get list coins from upbit
+            settings = TradeBotSettingConfig.objects.first()            
+            client = Upbit(settings.accessKey, settings.secretKey)
+            krw_coins = client.Market.Market_info_all()            
+            return JsonResponse(krw_coins['result'], safe=False)                                                                                              
         except Exception as e:
             return Response(e)        
+
+class TradeBotSettingView(APIView):
+    permission_classes = (IsAuthenticated,)
+    def get(self, request):
+        try:
+            settings = TradeBotSettingConfig.objects.all()            
+            serializer = TradeBotSettingSerializer(settings, many=True)                                                                        
+            return Response(serializer.data)                       
+        except Exception as e:
+            return Response(e)
+        
+class TradeBotSettingUpdate(APIView):
+    permission_classes = (IsAuthenticated,)
+    def post(self, request):
+        try:
+            # Get first TradeBotSettingConfig, if exist, update it, else create new one
+            setting = TradeBotSettingConfig.objects.first()
+            if setting is not None:
+                setting.accessKey = request.data['accessKey']
+                setting.secretKey = request.data['secretKey']
+                setting.currency = request.data['currency']
+                setting.time_sleep = 1000
+                setting.pumping_rate = request.data['pumping_rate']
+                setting.is_active = 1
+                setting.save()
+            else:
+                setting = TradeBotSettingConfig.objects.create(
+                    accessKey=request.data['accessKey'],
+                    secretKey=request.data['secretKey'],
+                    currency=request.data['currency'],
+                    time_sleep=1000,
+                    pumping_rate=request.data['pumping_rate'],
+                    is_active=1,
+                )
+            return Response(status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

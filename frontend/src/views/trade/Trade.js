@@ -26,6 +26,7 @@ import {
 import { DocsExample } from '../../components'
 import TradeCoin from './TradeCoin'
 import axios from 'axios'
+import Select2 from 'react-select2-wrapper';
 
 const API_ENDPOINT = process.env.REACT_APP_API_ENDPOINT
 
@@ -86,7 +87,7 @@ const Trade = () => {
     if (selectedCoin) {
       getSelectedCoin();
     }
-  });
+  }, []);
 
   const getWallet = async () => {
     try {
@@ -165,62 +166,7 @@ const Trade = () => {
   return (
     <>
       <CRow>
-        <CCol xs={12}>
-          <CCard className="mb-4">
-            <CCardHeader>
-              <strong>Find coin</strong> <small></small>
-            </CCardHeader>
-            <CCardBody>
-              <DocsExample href="forms/select">
-                <CFormSelect aria-label="Default select example" onChange={handleSelectedCoin}>
-                  <option>현재가</option>
-                  {coins.map((coin) => (
-                    <option value={coin.market}>{coin.name}</option>
-                  ))}
-                </CFormSelect>
-              </DocsExample>
-            </CCardBody>
-          </CCard>
-        </CCol>
         <TradeCoin price={currentPrice} candlePriceList={candlePriceList} tradeBotTotal={tradeBotTotal} isDetecingPump={isDetecingPump} balance={balance} />
-        <CCol xs={12}>
-          <CCard className="mb-4">
-            <CCardHeader>
-              <strong>Orders</strong> <small></small>
-            </CCardHeader>
-            <CCardBody>
-              <p className="text-medium-emphasis small">
-                # 1분봉 (최대 200개 요청가능)
-              </p>
-              <DocsExample href="components/table#hoverable-rows">
-                <CTable color="dark" hover>
-                  <CTableHead>
-                    <CTableRow>
-                      <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Open</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">High</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Low</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Close</CTableHeaderCell>
-                      <CTableHeaderCell scope="col">Volume</CTableHeaderCell>
-                    </CTableRow>
-                  </CTableHead>
-                  <CTableBody>
-                    {candle.map((order) => (
-                      <CTableRow>
-                        <CTableHeaderCell scope="row">{order.timestamp}</CTableHeaderCell>
-                        <CTableDataCell>{order.open}</CTableDataCell>
-                        <CTableDataCell>{order.high}</CTableDataCell>
-                        <CTableDataCell>{order.low}</CTableDataCell>
-                        <CTableDataCell>{order.close}</CTableDataCell>
-                        <CTableDataCell>{order.volume}</CTableDataCell>
-                      </CTableRow>
-                    ))}
-                  </CTableBody>
-                </CTable>
-              </DocsExample>
-            </CCardBody>
-          </CCard>
-        </CCol>
         <CCol xs={12}>
           <CCard className="mb-4">
             <CCardHeader>
@@ -233,7 +179,7 @@ const Trade = () => {
                     <CFormLabel htmlFor="exampleFormControlInput1">Coin</CFormLabel>
                     <CFormSelect aria-label="Default select example" id='market_bot'>
                       {coins.map((coin) => (
-                        <option value={coin.market}>{coin.name}</option>
+                        <option value={coin.market}>{coin.market}</option>
                       ))}
                     </CFormSelect>
                   </div>

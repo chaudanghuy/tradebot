@@ -175,7 +175,7 @@ const Trade = () => {
                 <CFormSelect aria-label="Default select example" onChange={handleSelectedCoin}>
                   <option>현재가</option>
                   {coins.map((coin) => (
-                    <option value={coin.market}>{coin.name}</option>
+                    <option value={coin.market}>{coin.korean_name}</option>
                   ))}
                 </CFormSelect>
               </DocsExample>
@@ -233,7 +233,7 @@ const Trade = () => {
                     <CFormLabel htmlFor="exampleFormControlInput1">Coin</CFormLabel>
                     <CFormSelect aria-label="Default select example" id='market_bot'>
                       {coins.map((coin) => (
-                        <option value={coin.market}>{coin.name}</option>
+                        <option value={coin.market}>{coin.market}</option>
                       ))}
                     </CFormSelect>
                   </div>

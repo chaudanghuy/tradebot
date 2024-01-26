@@ -1,10 +1,12 @@
-from .models import TradeBotCommand, TradeBotCommandDetail, TradeBotLogCommand1, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory, TradeBuyBotCommand
+from .models import TradeBotCommand, TradeBotCommandDetail, TradeBotLog, TradeBotConfig, TradeBotMyAccount, TradeCoinHistory, TradeBuyBotCommand, TradeBotSettingConfig
 import pyupbit
 from django.conf import settings
 
 def my_cron_jobs():
-    access_key = settings.ACCESS_UPBIT_KEY
-    screet_key = settings.SECRET_UPBIT_KEY                
+    # get upbit account
+    tradeSetting = TradeBotSettingConfig.objects.first()
+    access_key = tradeSetting.accessKey
+    screet_key = tradeSetting.secretKey                
     upbit = pyupbit.Upbit(access_key, screet_key)                        
     
     try:
@@ -35,20 +37,20 @@ def my_cron_jobs():
                   up_down_value = 10                                                                                                                   
                   
                   if up_down_value == 10:
-                    compare_vol = average_vol*5
-                    if now_vol >= compare_vol:     
-                      bot.is_completed = 1
-                      bot.save()           
+                    compare_vol = average_vol*tradeSetting.pumping_rate
+                    if now_vol >= compare_vol:                                      
                       # buy
                       balance = upbit.get_balance("KRW")
                       total_weight = balance * bot.trade_volume / 100                                                                            
                       buy_log = upbit.buy_market_order(ticker, total_weight)                                                       
                       print(buy_log)
-                      # write TradeBotLogCommand1
-                      log = TradeBotLogCommand1()
+                      # write log
+                      log = TradeBotLog()
                       log.message = 'Buy order is completed with total_weight: ' + str(total_weight)
                       log.trade_market = ticker
                       log.save()
+                      # delete bot command
+                      bot.delete()
               except:                        
                 bot.is_completed = 0
                 bot.save()                                                                     

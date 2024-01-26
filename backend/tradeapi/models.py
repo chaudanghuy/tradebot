@@ -32,7 +32,7 @@ class TradeBotCommandDetail(models.Model):
     is_expired = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)    
 
-class TradeBotLogCommand1(models.Model):
+class TradeBotLog(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     message = models.CharField(max_length=100)
     is_error = models.BooleanField(default=False)
@@ -62,12 +62,13 @@ class TradeCoinHistory(models.Model):
     is_expired = models.BooleanField(default=False)
     is_completed = models.BooleanField(default=False)
     
-class TradeBotSetting(models.Model):
+class TradeBotSettingConfig(models.Model):
     accessKey = models.CharField(max_length=200)
     secretKey = models.CharField(max_length=200)
     currency = models.CharField(max_length=10)
     time_sleep = models.IntegerField()
     timestamp = models.DateTimeField(auto_now_add=True)
+    pumping_rate = models.FloatField()
     is_active = models.BooleanField(default=True)    
     
 class TradeCoin(models.Model):
