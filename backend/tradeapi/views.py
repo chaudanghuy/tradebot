@@ -259,7 +259,9 @@ class TradeCoinView(APIView):
             # get list coins from upbit
             settings = TradeBotSettingConfig.objects.first()            
             client = Upbit(settings.accessKey, settings.secretKey)
-            krw_coins = client.Market.Market_info_all()            
+            krw_coins = client.Market.Market_info_all()       
+            # filter krw_coins with market is KRW-*
+            krw_coins['result'] = list(filter(lambda x: x['market'].startswith('KRW-'), krw_coins['result']))     
             return JsonResponse(krw_coins['result'], safe=False)                                                                                              
         except Exception as e:
             return Response(e)        
